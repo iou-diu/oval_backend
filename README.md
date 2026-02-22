@@ -28,8 +28,8 @@ DCL Backend Documentation
     ```
 9. Run Celery for the background tasks
     ```sh
-    $ celery -A ecommerce_backend worker -l info -P threads  
-    $ celery -A ecommerce_backend beat -l info
+    $ celery -A oval_backend worker -l info -P threads  
+    $ celery -A oval_backend beat -l info
     ```
 10. Run Typesense Commands
     ```sh
