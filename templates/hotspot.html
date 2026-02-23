@@ -9,11 +9,14 @@
 
         .hotspot {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: yellow;
+            width: 12px;
+            height: 12px;
+            background-color: #ff0;
+            border: 2px solid #000;
             border-radius: 50%;
             cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 10;
         }
 
         .hotspot-details {
@@ -112,14 +115,20 @@
             hotspots.push({x_coordinate: x, y_coordinate: y, product_id: null});
 
             const hotspotDetails = document.createElement('div');
-            hotspotDetails.className = 'hotspot-details';
+            hotspotDetails.className = 'hotspot-details mb-3';
             hotspotDetails.innerHTML = `
-            <h4>Hotspot ${index + 1}</h4>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="mb-0">Hotspot ${index + 1}</h4>
+                <button type="button" class="btn btn-sm btn-danger remove-hotspot-btn" data-index="${index}">Delete</button>
+            </div>
             <label>Product:</label>
             <select data-index="${index}" class="product-select form-control" style="width:100%">
-            </select><br>
+            </select>
         `;
             hotspotList.appendChild(hotspotDetails);
+
+            // Add remove listener to dot too? Let's just use the button for now.
+            hotspot.setAttribute('data-index', index);
 
             const $select = $(hotspotDetails.querySelector('.product-select'));
             $select.select2({
@@ -153,9 +162,26 @@
             saveAllButton.style.display = 'block';
         });
 
+        // Event delegation for delete buttons
+        hotspotList.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-hotspot-btn')) {
+                const index = parseInt(e.target.getAttribute('data-index'));
+                hotspots[index].deleted = true;
+                e.target.closest('.hotspot-details').style.display = 'none';
+                
+                // Find and hide the dot
+                const dots = imageContainer.querySelectorAll('.hotspot');
+                dots.forEach(dot => {
+                    if (dot.getAttribute('data-index') == index) {
+                        dot.style.display = 'none';
+                    }
+                });
+            }
+        });
+
         // Save all hotspots
         saveAllButton.addEventListener('click', () => {
-            const hotspotItems = hotspots.map((hotspot) => ({
+            const hotspotItems = hotspots.filter(h => !h.deleted).map((hotspot) => ({
                 x: hotspot.x_coordinate,
                 y: hotspot.y_coordinate,
                 product_id: hotspot.product_id,
