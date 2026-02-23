@@ -11,7 +11,7 @@
                             Home Slider
                         </h4>
                         <div class="card-toolbar">
-                            <a href="" class="btn btn-light btn-sm d-flex align-items-center">
+                            <a href="{% url 'home_slider_create' %}" class="btn btn-light btn-sm d-flex align-items-center">
                                 + Add New Slider
                             </a>
                         </div>
@@ -34,8 +34,8 @@
                                         <td>{{ slider.title }}</td>
                                         <td>{{ slider.description }}</td>
                                         <td>
-                                            edit
-                                            delete
+                                            <a href="{% url 'home_slider_update' slider.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                                            <a href="{% url 'home_slider_delete' slider.pk %}" class="btn btn-sm btn-danger">Delete</a>
                                         </td>
                                     </tr>
                                 {% empty %}

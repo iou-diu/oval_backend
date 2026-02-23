@@ -1,15 +1,34 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 
 from apps.cms.models import HomeSlider, ContactForm
+from apps.cms.forms import HomeSliderForm
 
 
 # Create your views here.
 class HomeSliderView(ListView):
-    model = HomeSlider  # Assuming HomeSlider is imported or defined elsewhere
+    model = HomeSlider
     template_name = 'cms/slider.html'
+
+class HomeSliderCreateView(CreateView):
+    model = HomeSlider
+    form_class = HomeSliderForm
+    template_name = 'cms/slider_form.html'
+    success_url = reverse_lazy('home_slider')
+
+class HomeSliderUpdateView(UpdateView):
+    model = HomeSlider
+    form_class = HomeSliderForm
+    template_name = 'cms/slider_form.html'
+    success_url = reverse_lazy('home_slider')
+
+class HomeSliderDeleteView(DeleteView):
+    model = HomeSlider
+    template_name = 'cms/slider_confirm_delete.html'
+    success_url = reverse_lazy('home_slider')
 
 
 class ContactFormListView(ListView):

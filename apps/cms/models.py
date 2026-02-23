@@ -12,8 +12,10 @@ class HomeSlider(models.Model):
     button_link = models.TextField(blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
 
-    class Meta:
+    class Meta: 
         ordering = ['order']
+        verbose_name = 'Home Slider'
+        verbose_name_plural = 'Home Sliders'
 
     def __str__(self):
         return self.title or 'Home Slider Item'

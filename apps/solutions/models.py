@@ -17,7 +17,7 @@ class Solution(models.Model):
     thumbnail = models.ImageField(upload_to='solutions/thumbnails/', blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     images = models.JSONField(default=list)  # List of image URLs or paths
-
+ 
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
