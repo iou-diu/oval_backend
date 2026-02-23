@@ -261,30 +261,30 @@
 
     <script>
         $(document).ready(function() {
-        // Initialize Select2 for all dropdowns
-        $('#menuCategorySelect, #collectionCategorySelect, #inspirationCategorySelect').select2({
-            placeholder: "Select a category",
-            allowClear: true,
-            width: '100%'
-        });
-         $('#bannerGallery').select2({
-            placeholder: "Select a gallery",
-            allowClear: true,
-            width: '100%'
-        });
+            // Initialize Select2 for all dropdowns
+            $('#menuCategorySelect, #collectionCategorySelect, #inspirationCategorySelect').select2({
+                placeholder: "Select a category",
+                allowClear: true,
+                width: '100%'
+            });
+            $('#bannerGallery').select2({
+                placeholder: "Select a gallery",
+                allowClear: true,
+                width: '100%'
+            });
     
-        // Initialize the categories arrays with existing items
+            // Initialize the categories arrays with existing items
             window.categories = {
                 menu: Array.from($('#menuCategoriesList li')).map(li => ({
-                    id: $(li).data('id').toString(),
+                    id: String($(li).attr('data-id')),
                     name: $(li).find('span').text().trim()
                 })),
                 collection: Array.from($('#uniqueCollectionsList li')).map(li => ({
-                    id: $(li).data('id').toString(),
+                    id: String($(li).attr('data-id')),
                     name: $(li).find('span').text().trim()
                 })),
                 inspiration: Array.from($('#inspirationCollectionsList li')).map(li => ({
-                    id: $(li).data('id').toString(),
+                    id: String($(li).attr('data-id')),
                     name: $(li).find('span').text().trim()
                 }))
             };
@@ -293,7 +293,7 @@
             $('#menuCategorySelect option').each(function() {
                 if ($(this).val()) {  // Skip empty value option
                     window.allCategories.push({
-                        id: $(this).val(),
+                        id: String($(this).val()),
                         name: $(this).text()
                     });
                 }
@@ -315,28 +315,30 @@
             $('#inspirationCategorySelect').empty().append('<option value="">-- Select a Category --</option>');
         
             // Add available categories to each dropdown
-            window.allCategories.forEach(category => {
-                // For menu dropdown
-                if (!categories.menu.some(cat => cat.id === category.id)) {
-                    $('#menuCategorySelect').append(`
-                        <option value="${category.id}">${category.name}</option>
-                    `);
-                }
-                
-                // For collection dropdown
-                if (!categories.collection.some(cat => cat.id === category.id)) {
-                    $('#collectionCategorySelect').append(`
-                        <option value="${category.id}">${category.name}</option>
-                    `);
-                }
-                
-                // For inspiration dropdown
-                if (!categories.inspiration.some(cat => cat.id === category.id)) {
-                    $('#inspirationCategorySelect').append(`
-                        <option value="${category.id}">${category.name}</option>
-                    `);
-                }
-            });
+            if (window.allCategories) {
+                window.allCategories.forEach(category => {
+                    // For menu dropdown
+                    if (!window.categories.menu.some(cat => cat.id === category.id)) {
+                        $('#menuCategorySelect').append(`
+                            <option value="${category.id}">${category.name}</option>
+                        `);
+                    }
+                    
+                    // For collection dropdown
+                    if (!window.categories.collection.some(cat => cat.id === category.id)) {
+                        $('#collectionCategorySelect').append(`
+                            <option value="${category.id}">${category.name}</option>
+                        `);
+                    }
+                    
+                    // For inspiration dropdown
+                    if (!window.categories.inspiration.some(cat => cat.id === category.id)) {
+                        $('#inspirationCategorySelect').append(`
+                            <option value="${category.id}">${category.name}</option>
+                        `);
+                    }
+                });
+            }
         
             // Restore selections if still valid
             $('#menuCategorySelect').val(menuSelectedVal).trigger('change');
@@ -374,7 +376,7 @@
             const selectedName = select.find('option:selected').text();
         
             // Check if already exists
-            if (categories[type].some(cat => cat.id === selectedId)) {
+            if (window.categories[type].some(cat => String(cat.id) === String(selectedId))) {
                 alert('This category is already added');
                 return;
             }
@@ -393,8 +395,8 @@
             $(`#${listId}`).append(newItem);
         
             // Add to data array
-            categories[type].push({
-                id: selectedId,
+            window.categories[type].push({
+                id: String(selectedId),
                 name: selectedName
             });
         
@@ -423,7 +425,7 @@
             $(`#${listId} li[data-id="${categoryId}"]`).remove();
             
             // Remove from data array
-            categories[type] = categories[type].filter(cat => cat.id !== categoryId.toString());
+            window.categories[type] = window.categories[type].filter(cat => String(cat.id) !== String(categoryId));
             
             // Update dropdowns
             updateDropdowns();
