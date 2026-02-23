@@ -36,6 +36,7 @@
                                         <td>{{ hotspot.slug }}</td>
                                         <td>{{ hotspot.hot_spot_items.count }}</td>
                                         <td>
+                                            <a href="{% url 'hotspot_edit' hotspot.pk %}" class="btn btn-sm btn-primary">Edit</a>
                                             <a href="{% url 'hotspot_delete' hotspot.pk %}" class="btn btn-sm btn-danger">Delete</a>
                                         </td>
                                     </tr>

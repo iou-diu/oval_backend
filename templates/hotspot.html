@@ -124,7 +124,7 @@
             const $select = $(hotspotDetails.querySelector('.product-select'));
             $select.select2({
                 placeholder: 'Search product',
-                minimumInputLength: 1,
+                minimumInputLength: 0,
                 ajax: {
                     url: '/promo/get_products/',
                     dataType: 'json',

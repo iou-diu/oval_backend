@@ -54,10 +54,11 @@ def create_hotspot_api(request):
 def get_products(request):
     query = request.GET.get('q', '').strip()
 
-    if not query:
-        return JsonResponse({'error': 'Search query is required'}, status=400)
-
-    products = Product.objects.filter(name__icontains=query).values('id', 'name')
+    products = Product.objects.all()
+    if query:
+        products = products.filter(name__icontains=query)
+        
+    products = products.values('id', 'name')[:50]
 
     return JsonResponse({
         'products': list(products),
@@ -83,3 +84,59 @@ class HotspotDeleteView(DeleteView):
     model = Hotspot
     template_name = 'promo/hotspot_confirm_delete.html'
     success_url = reverse_lazy('hotspot_list')
+
+class HotspotEditView(TemplateView):
+    template_name = 'hotspot_edit.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hotspot = get_object_or_404(Hotspot, pk=self.kwargs['pk'])
+        context['hotspot'] = hotspot
+        context['list_link'] = reverse_lazy('hotspot_list')
+        context['page_title'] = 'Hotspot'
+        
+        hotspot_items = []
+        for item in hotspot.hot_spot_items.all():
+            hotspot_items.append({
+                'id': item.id,
+                'x': item.x_coordinate,
+                'y': item.y_coordinate,
+                'product_id': item.product.id if item.product else None,
+                'product_name': item.product.name if item.product else '',
+            })
+        context['hotspot_items_json'] = json.dumps(hotspot_items)
+        return context
+
+@csrf_exempt
+def edit_hotspot_api(request, pk):
+    if request.method == 'POST':
+        try:
+            hotspot = get_object_or_404(Hotspot, pk=pk)
+            title = request.POST.get('title')
+            image = request.FILES.get('image')
+            hotspot_items_data = json.loads(request.POST.get('hotspot_items', '[]'))
+
+            if not title:
+                return JsonResponse({'error': 'Title is required.'}, status=400)
+
+            hotspot.title = title
+            if image:
+                hotspot.image = image
+            hotspot.save()
+
+            hotspot.hot_spot_items.all().delete()
+
+            for item in hotspot_items_data:
+                HotspotItem.objects.create(
+                    hot_spot=hotspot,
+                    product_id=item['product_id'],
+                    x_coordinate=item['x'],
+                    y_coordinate=item['y']
+                )
+
+            return JsonResponse({'message': 'Hotspot updated successfully!'})
+
+        except Exception as e:
+            return JsonResponse({'error': f'Error: {str(e)}'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

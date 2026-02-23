@@ -1,0 +1,254 @@
+{% extends 'includes/main.html' %}
+{% load static %}
+{% block css %}
+    <style>
+        #image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hotspot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: yellow;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+        }
+
+        .hotspot-details {
+            margin-top: 10px;
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 mx-auto">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+                        <h4 class="card-title fw-bold m-0 px-4">
+                            Update Hotspot:
+                        </h4>
+                        <div class="card-toolbar">
+                            {% if list_link %}
+                                <a href="{{ list_link }}" class="btn btn-light btn-sm d-flex align-items-center">
+                                    <i class="fas fa-list me-1"></i> {{ page_title }} List
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body" id="hotspot-form">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-row mb-3">
+                                    <label for="title" class="fw-bold">Title:</label>
+                                    <input class="form-control" type="text" name="title" id="title" value="{{ hotspot.title }}">
+                                </div>
+                                <div class="form-row mb-3">
+                                    <label for="image-upload" class="fw-bold">Update Image (Optional):</label>
+                                    <input class="form-control" type="file" id="image-upload" accept="image/*">
+                                    <small class="form-text text-muted">Leave blank if you do not want to change the image.</small>
+                                </div>
+
+                                <div id="image-container">
+                                    <img id="image-preview" src="{% if hotspot.image %}{{ hotspot.image.url }}{% endif %}" alt="Preview Image"
+                                         style="max-width: 100%; display: {% if hotspot.image %}block{% else %}none{% endif %};">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h3>Hotspot Details</h3>
+                                <div id="hotspot-list"></div>
+                                <br>
+                                <button id="save-all" class="btn btn-success" style="display: block;">Update All Hotspots</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+
+    <script>
+        const imageUpload = document.getElementById('image-upload');
+        const imagePreview = document.getElementById('image-preview');
+        const imageContainer = document.getElementById('image-container');
+        const hotspotList = document.getElementById('hotspot-list');
+        const saveAllButton = document.getElementById('save-all');
+
+        let hotspots = {{ hotspot_items_json|safe }};
+
+        function renderExistingHotspots() {
+            hotspots.forEach((hotspotData, index) => {
+                const hotspot = document.createElement('div');
+                hotspot.className = 'hotspot';
+                hotspot.style.left = `${hotspotData.x}%`;
+                hotspot.style.top = `${hotspotData.y}%`;
+                imageContainer.appendChild(hotspot);
+
+                const hotspotDetails = document.createElement('div');
+                hotspotDetails.className = 'hotspot-details mb-3';
+                hotspotDetails.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="mb-0">Hotspot ${index + 1}</h4>
+                        <button type="button" class="btn btn-sm btn-danger remove-hotspot-btn" data-index="${index}">Delete</button>
+                    </div>
+                    <label>Product:</label>
+                    <select data-index="${index}" class="product-select form-control" style="width:100%">
+                        ${hotspotData.product_id ? `<option value="${hotspotData.product_id}" selected>${hotspotData.product_name}</option>` : ''}
+                    </select>
+                `;
+                hotspotList.appendChild(hotspotDetails);
+
+                initializeSelect2(hotspotDetails.querySelector('.product-select'), index);
+            });
+        }
+
+        function initializeSelect2(selectElement, index) {
+            const $select = $(selectElement);
+            $select.select2({
+                placeholder: 'Search product',
+                minimumInputLength: 0,
+                ajax: {
+                    url: '/promo/get_products/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.products.map(product => ({
+                                id: product.id,
+                                text: product.name
+                            }))
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+            $select.on('change', function () {
+                hotspots[index].product_id = $(this).val();
+            });
+        }
+
+        renderExistingHotspots();
+
+        // Preview uploaded image
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Add hotspot on image click
+        imagePreview.addEventListener('click', (event) => {
+            const rect = imagePreview.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+            const hotspot = document.createElement('div');
+            hotspot.className = 'hotspot';
+            hotspot.style.left = `${x}%`;
+            hotspot.style.top = `${y}%`;
+            imageContainer.appendChild(hotspot);
+
+            const index = hotspots.length;
+            hotspots.push({x: x, y: y, product_id: null});
+
+            const hotspotDetails = document.createElement('div');
+            hotspotDetails.className = 'hotspot-details mb-3';
+            hotspotDetails.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="mb-0">Hotspot ${index + 1}</h4>
+                    <button type="button" class="btn btn-sm btn-danger remove-hotspot-btn" data-index="${index}">Delete</button>
+                </div>
+                <label>Product:</label>
+                <select data-index="${index}" class="product-select form-control" style="width:100%">
+                </select>
+            `;
+            hotspotList.appendChild(hotspotDetails);
+
+            initializeSelect2(hotspotDetails.querySelector('.product-select'), index);
+        });
+
+        // Event delegation for delete buttons
+        hotspotList.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-hotspot-btn')) {
+                const index = parseInt(e.target.getAttribute('data-index'));
+                
+                // remove from hotspots array (nullify rather than splice to keep indices matching for now)
+                hotspots[index].deleted = true;
+
+                // remove dom elements
+                e.target.closest('.hotspot-details').style.display = 'none';
+                if(imageContainer.children[index + 1]) { // +1 because imagePreview is first child
+                    imageContainer.children[index + 1].style.display = 'none';
+                }
+            }
+        });
+
+        // Save all hotspots
+        saveAllButton.addEventListener('click', () => {
+            const hotspotItems = hotspots.filter(h => !h.deleted).map((hotspot) => ({
+                x: hotspot.x,
+                y: hotspot.y,
+                product_id: hotspot.product_id,
+            }));
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            if (document.getElementById('image-upload').files[0]) {
+                formData.append('image', document.getElementById('image-upload').files[0]);
+            }
+            formData.append('hotspot_items', JSON.stringify(hotspotItems));
+
+            fetch("{% url 'edit_hotspot_api' hotspot.pk %}", {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Hotspot updated successfully!',
+                            didClose: () => {
+                                window.location.href = "{% url 'hotspot_list' %}";
+                            }
+                        });
+                    }
+                })
+                .catch((error) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error saving hotspots'
+                    });
+                });
+        });
+    </script>
+{% endblock %}
