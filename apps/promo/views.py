@@ -4,7 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 import json
 
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, DeleteView
+from django.urls import reverse_lazy
 from rest_framework import viewsets
 
 from .models import Hotspot, HotspotItem
@@ -66,3 +67,19 @@ def get_products(request):
 
 class HotspotAddView(TemplateView):
     template_name = 'hotspot.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['list_link'] = reverse_lazy('hotspot_list')
+        context['page_title'] = 'Hotspot'
+        return context
+
+class HotspotListView(ListView):
+    model = Hotspot
+    template_name = 'promo/hotspot_list.html'
+    context_object_name = 'hotspots'
+
+class HotspotDeleteView(DeleteView):
+    model = Hotspot
+    template_name = 'promo/hotspot_confirm_delete.html'
+    success_url = reverse_lazy('hotspot_list')

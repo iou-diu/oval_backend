@@ -584,7 +584,7 @@
 
                 <!-- User Management -->
 
-                <li class="menu-item menu-item-submenu {% if request.resolver_match.url_name == 'home_slider' %} menu-item-open {% endif %}"
+                <li class="menu-item menu-item-submenu {% if request.resolver_match.url_name == 'home_slider' or request.resolver_match.url_name == 'hotspot_list' %} menu-item-open {% endif %}"
                     aria-haspopup="true"
                     data-menu-toggle="hover">
                     <a href="javascript:;" class="menu-link menu-toggle">
@@ -600,6 +600,14 @@
                                 <a href="{% url 'home_slider' %}" class="menu-link">
                                     <i class="menu-icon fa fa-user-secret"></i>
                                     <span class="menu-text">Home Slider</span>
+                                </a>
+                            </li>
+
+                            <li class="menu-item {% if request.resolver_match.url_name == 'hotspot_list' %}active_link{% endif %}"
+                                aria-haspopup="true">
+                                <a href="{% url 'hotspot_list' %}" class="menu-link">
+                                    <i class="menu-icon fa fa-user-secret"></i>
+                                    <span class="menu-text">Hotspot</span>
                                 </a>
                             </li>
 
