@@ -288,6 +288,16 @@
                     name: $(li).find('span').text().trim()
                 }))
             };
+
+            window.allCategories = [];
+            $('#menuCategorySelect option').each(function() {
+                if ($(this).val()) {  // Skip empty value option
+                    window.allCategories.push({
+                        id: $(this).val(),
+                        name: $(this).text()
+                    });
+                }
+            });
         
             // Initial update of dropdowns
             updateDropdowns();
@@ -299,24 +309,13 @@
             const collectionSelectedVal = $('#collectionCategorySelect').val();
             const inspirationSelectedVal = $('#inspirationCategorySelect').val();
         
-            // Get all options from the initial render
-            const allCategories = [];
-            $('#menuCategorySelect option').each(function() {
-                if ($(this).val()) {  // Skip empty value option
-                    allCategories.push({
-                        id: $(this).val(),
-                        name: $(this).text()
-                    });
-                }
-            });
-        
             // Update Menu Categories dropdown
             $('#menuCategorySelect').empty().append('<option value="">-- Select a Category --</option>');
             $('#collectionCategorySelect').empty().append('<option value="">-- Select a Category --</option>');
             $('#inspirationCategorySelect').empty().append('<option value="">-- Select a Category --</option>');
         
             // Add available categories to each dropdown
-            allCategories.forEach(category => {
+            window.allCategories.forEach(category => {
                 // For menu dropdown
                 if (!categories.menu.some(cat => cat.id === category.id)) {
                     $('#menuCategorySelect').append(`
