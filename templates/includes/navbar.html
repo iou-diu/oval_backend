@@ -52,7 +52,7 @@
 
                 <!-- Products -->
                 <li
-                        class="menu-item menu-item-submenu {% if request.resolver_match.url_name|in_url_group:'products' or request.resolver_match.url_name|in_url_group:'categories' or request.resolver_match.url_name|in_url_group:'brands' or request.resolver_match.url_name|in_url_group:'tags' or request.resolver_match.url_name|in_url_group:'flash_deals' %} menu-item-open {% endif %}"
+                        class="menu-item menu-item-submenu {% if request.resolver_match.url_name|in_url_group:'products' or request.resolver_match.url_name|in_url_group:'categories' or request.resolver_match.url_name|in_url_group:'brands' or request.resolver_match.url_name|in_url_group:'tags' or request.resolver_match.url_name|in_url_group:'flash_deals' or request.resolver_match.url_name|in_url_group:'catalogs' %} menu-item-open {% endif %}"
                         aria-haspopup="true"
                         data-menu-toggle="hover"
                 >
@@ -108,6 +108,16 @@
                                 <a href="{% url 'flash_deals' %}" class="menu-link">
                                     <i class="menu-icon fa fa-percent"></i>
                                     <span class="menu-text">Flash Deals</span>
+                                </a>
+                            </li>
+
+                            <li
+                                    class="menu-item {% if request.resolver_match.url_name|in_url_group:'catalogs' %}active_link{% endif %}"
+                                    aria-haspopup="true"
+                            >
+                                <a href="{% url 'catalog_list' %}" class="menu-link">
+                                    <i class="menu-icon fas fa-book"></i>
+                                    <span class="menu-text">Catalog</span>
                                 </a>
                             </li>
 

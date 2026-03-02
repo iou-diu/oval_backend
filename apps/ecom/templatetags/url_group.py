@@ -29,7 +29,8 @@ def in_url_group(url_name, group_name):
         'admin_menus': ['group_permission_view','customeruser_list','staffuser_list'],
         'supplier': ['supplier_list','supplier_add','supplier_update','supplier_delete'], 
         'flash_deals': ['flash_deals','flash_deal_create','flash_deal_edit','flash_deals_delete'],
-        'settings': ['businesslocation_list','businesslocation_add','businesslocation_update','businesslocation_delete']
+        'settings': ['businesslocation_list','businesslocation_add','businesslocation_update','businesslocation_delete'],
+        'catalogs': ['catalog_list', 'catalog_create', 'catalog_update', 'catalog_delete', 'catalog_detail']
     }
     return url_name in groups.get(group_name, [])
 
