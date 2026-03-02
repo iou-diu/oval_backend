@@ -61,9 +61,9 @@ def last_year_month():
 
 def u_slugify(txt):
     txt = txt.strip()  # remove trailing whitespace
-    txt = re.sub('\s*-\s*', '-', txt, re.UNICODE)  # remove spaces before and after dashes
-    txt = re.sub('[\s/]', '-', txt, re.UNICODE)  # replace remaining spaces with hyphens
-    txt = re.sub('(\d):(\d)', r'\1-\2', txt, re.UNICODE)  # replace colons between numbers with dashes
+    txt = re.sub(r'\s*-\s*', '-', txt, re.UNICODE)  # remove spaces before and after dashes
+    txt = re.sub(r'[\s/]', '-', txt, re.UNICODE)  # replace remaining spaces with hyphens
+    txt = re.sub(r'(\d):(\d)', r'\1-\2', txt, re.UNICODE)  # replace colons between numbers with dashes
     txt = re.sub('"', "", txt, re.UNICODE)  # replace double quotes with single quotes
     txt = re.sub('’', "", txt, re.UNICODE)
     txt = re.sub('‘', "", txt, re.UNICODE)
@@ -218,9 +218,9 @@ client = typesense.Client({
 
 def u_slugify(txt):
     txt = txt.strip()  # remove trailing whitespace
-    txt = re.sub('\s*-\s*', '-', txt, re.UNICODE)  # remove spaces before and after dashes
-    txt = re.sub('[\s/]', '-', txt, re.UNICODE)  # replace remaining spaces with hyphens
-    txt = re.sub('(\d):(\d)', r'\1-\2', txt, re.UNICODE)  # replace colons between numbers with dashes
+    txt = re.sub(r'\s*-\s*', '-', txt, re.UNICODE)  # remove spaces before and after dashes
+    txt = re.sub(r'[\s/]', '-', txt, re.UNICODE)  # replace remaining spaces with hyphens
+    txt = re.sub(r'(\d):(\d)', r'\1-\2', txt, re.UNICODE)  # replace colons between numbers with dashes
     txt = re.sub('"', "", txt, re.UNICODE)  # replace double quotes with single quotes
     txt = re.sub('’', "", txt, re.UNICODE)
     txt = re.sub('‘', "", txt, re.UNICODE)
