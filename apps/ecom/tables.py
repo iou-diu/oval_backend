@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 from apps.helpers import CustomTable
 from django.utils.safestring import mark_safe
 from django.urls import reverse_lazy
-from .models import Address, Attribute, AttributeValue, Brand, Category, Coupon, FlashDeal, Order, Product, ProductImage, ProductVariant, SliderImage, StockEntry, SupportTicket, Tag, Tax
+from .models import Address, Attribute, AttributeValue, Brand, Category, Coupon, FlashDeal, Order, Product, ProductImage, ProductVariant, SliderImage, StockEntry, SupportTicket, Tag, Tax, ProductFAQ
 
 class CategoryTable(CustomTable):
     
@@ -519,5 +519,17 @@ class FlashDealTable(CustomTable):
         template_name = 'django_tables2/bootstrap4.html'
         fields = ['title','start_date','end_date','is_active']
         empty_text = 'No tags available'
+        orderable = True
+        exclude = ('selected',)
+        
+class ProductFAQTable(CustomTable):
+    edit_url = 'product_faq_update'
+    delete_url = 'product_faq_delete'
+
+    class Meta:
+        model = ProductFAQ
+        template_name = 'django_tables2/bootstrap4.html'
+        fields = ('product', 'question', 'answer', 'created_at')
+        empty_text = 'No Product FAQs available'
         orderable = True
         exclude = ('selected',)

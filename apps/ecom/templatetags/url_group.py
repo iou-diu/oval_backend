@@ -5,7 +5,7 @@ register = template.Library()
 @register.filter
 def in_url_group(url_name, group_name):
     groups = {
-        'products': ['product_list', 'product_add', 'product_update', 'product_delete','product_attribute_dynamic_create','product_add_images'],
+        'products': ['product_list', 'product_add', 'product_update', 'product_delete','product_attribute_dynamic_create','product_add_images', 'product_faq_list', 'product_faq_add', 'product_faq_update', 'product_faq_delete'],
         'stocks': [
             'stock_product_wise_update',
             'stockentry_delete',
@@ -30,7 +30,8 @@ def in_url_group(url_name, group_name):
         'supplier': ['supplier_list','supplier_add','supplier_update','supplier_delete'], 
         'flash_deals': ['flash_deals','flash_deal_create','flash_deal_edit','flash_deals_delete'],
         'settings': ['businesslocation_list','businesslocation_add','businesslocation_update','businesslocation_delete'],
-        'catalogs': ['catalog_list', 'catalog_create', 'catalog_update', 'catalog_delete', 'catalog_detail']
+        'catalogs': ['catalog_list', 'catalog_create', 'catalog_update', 'catalog_delete', 'catalog_detail'],
+        'product_faqs': ['product_faq_list', 'product_faq_add', 'product_faq_update', 'product_faq_delete']
     }
     return url_name in groups.get(group_name, [])
 

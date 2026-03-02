@@ -28,21 +28,22 @@ from apps.helpers import CustomSingleTableMixin, DeleteMessageMixin, MessageMixi
 
 from .models import (
     Address, Attribute, AttributeValue, Brand, BusinessSetting, Category, Coupon, FlashDeal, Order, Product,
-    ProductAttribute,
-    ProductImage, ProductVariant, SliderImage, StockEntry, Tag, Tax
+    ProductAttribute, ProductImage, ProductVariant, SliderImage, StockEntry, Tag, Tax, ProductFAQ
 )
 from .forms import (
     AddressForm, AttributeForm, AttributeValueForm, BrandForm, CategoryForm, CreateCouponForm,
     ProductAttributeForm, ProductForm, ProductImageDirectForm, ProductImageForm,
-    ProductVariantForm, SliderImageForm, StockEntryByProductForm, StockEntryForm, TagForm, TaxForm, ProductVariantForm1
+    ProductVariantForm, SliderImageForm, StockEntryByProductForm, StockEntryForm, TagForm, TaxForm, ProductVariantForm1,
+    ProductFAQForm
 )
 from .tables import (
     AddressTable, AttributeTable, AttributeValueTable, BrandTable, CategoryTable, CouponTable, FlashDealTable,
-    ProductImageTable, ProductTable, ProductVariantTable, SliderImageTable, StockEntryTable, TagTable, TaxTable
+    ProductImageTable, ProductTable, ProductVariantTable, SliderImageTable, StockEntryTable, TagTable, TaxTable,
+    ProductFAQTable
 )
 from .filters import (
     AddressFilter, AttributeFilter, AttributeValueFilter, BrandFilter, CategoryFilter, FlashDealFilter,
-    ProductFilter, ProductImageFilter, ProductVariantFilter, StockEntryFilter, TagFilter, TaxFilter
+    ProductFilter, ProductImageFilter, ProductVariantFilter, StockEntryFilter, TagFilter, TaxFilter, ProductFAQFilter
 )
 from ..promo.models import Hotspot
 
@@ -1585,3 +1586,43 @@ def order_update_status(request, pk):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
+
+class ProductFAQListView(PermissionRequiredMixin, LoginRequiredMixin, PageHeaderMixin, CustomSingleTableMixin, FilterView):
+    model = ProductFAQ
+    table_class = ProductFAQTable
+    template_name = 'list.html'
+    permission_required = 'ecom.view_productfaq'
+    filterset_class = ProductFAQFilter
+    page_title = 'Product FAQs'
+    add_link = reverse_lazy('product_faq_add')
+    add_perms = 'ecom.add_productfaq'
+    edit_perms = 'ecom.change_productfaq'
+    delete_perms = 'ecom.delete_productfaq'
+    edit_url = 'product_faq_update'
+
+class ProductFAQCreateView(PermissionRequiredMixin, LoginRequiredMixin, MessageMixin, PageHeaderMixin, CreateView):
+    model = ProductFAQ
+    form_class = ProductFAQForm
+    template_name = 'add.html'
+    permission_required = 'ecom.add_productfaq'
+    success_url = reverse_lazy('product_faq_list')
+    page_title = 'Product FAQ'
+    list_link = reverse_lazy('product_faq_list')
+    success_message = 'Product FAQ created successfully.'
+
+class ProductFAQUpdateView(PermissionRequiredMixin, LoginRequiredMixin, MessageMixin, PageHeaderMixin, UpdateView):
+    model = ProductFAQ
+    form_class = ProductFAQForm
+    template_name = 'add.html'
+    permission_required = 'ecom.change_productfaq'
+    success_url = reverse_lazy('product_faq_list')
+    page_title = 'Product FAQ'
+    list_link = reverse_lazy('product_faq_list')
+    success_message = 'Product FAQ updated successfully.'
+
+class ProductFAQDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteMessageMixin, DeleteView):
+    model = ProductFAQ
+    success_url = reverse_lazy('product_faq_list')
+    permission_required = 'ecom.delete_productfaq'
+    success_message = 'Product FAQ deleted successfully.'

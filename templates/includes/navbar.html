@@ -121,6 +121,16 @@
                                 </a>
                             </li>
 
+                            <li
+                                    class="menu-item {% if request.resolver_match.url_name|in_url_group:'product_faqs' %}active_link{% endif %}"
+                                    aria-haspopup="true"
+                            >
+                                <a href="{% url 'product_faq_list' %}" class="menu-link">
+                                    <i class="menu-icon fas fa-question-circle"></i>
+                                    <span class="menu-text">Product FAQ</span>
+                                </a>
+                            </li>
+
 
                         </ul>
                     </div>

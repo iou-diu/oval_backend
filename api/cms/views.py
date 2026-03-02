@@ -143,9 +143,10 @@ class ContactFormViewSet(mixins.CreateModelMixin,
 
 class CatalogViewSet(viewsets.ModelViewSet):
     queryset = Catalog.objects.filter(is_published=True).order_by('-created_at')
-    authentication_classes = [CsrfExemptSessionAuthentication, TokenAuthentication]
     lookup_field = 'slug'
     http_method_names = ['get']
+    permission_classes = [AllowAny]
+    authentication_classes = []  # Public API
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

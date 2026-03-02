@@ -1,9 +1,9 @@
 
 import django_filters
 
-from .models import Address, Attribute, AttributeValue, Brand, Category, FlashDeal, Product, ProductImage, ProductVariant, StockEntry, Tag, Tax
+from .models import Address, Attribute, AttributeValue, Brand, Category, FlashDeal, Product, ProductImage, ProductVariant, StockEntry, Tag, Tax, ProductFAQ
 
-from .forms import AddressFilterForm, AttributeFilterForm, AttributeValueFilterForm, BrandFilterForm, CategoryFilterForm, FlashDealFilterForm, ProductFilterForm, ProductImageFilterForm, ProductVariantFilterForm, StockEntryFilterForm, TagFilterForm, TaxFilterForm
+from .forms import AddressFilterForm, AttributeFilterForm, AttributeValueFilterForm, BrandFilterForm, CategoryFilterForm, FlashDealFilterForm, ProductFilterForm, ProductImageFilterForm, ProductVariantFilterForm, StockEntryFilterForm, TagFilterForm, TaxFilterForm, ProductFAQFilterForm
 
 class CategoryFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
@@ -118,3 +118,11 @@ class FlashDealFilter(django_filters.FilterSet):
         model = FlashDeal
         fields = ['title']
         form = FlashDealFilterForm
+        
+class ProductFAQFilter(django_filters.FilterSet):
+    question = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = ProductFAQ
+        fields = ['product', 'question']
+        form = ProductFAQFilterForm

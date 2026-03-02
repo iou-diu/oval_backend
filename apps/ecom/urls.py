@@ -13,6 +13,7 @@ from .views import ProductImageCreateView, ProductImageDeleteView, ProductImageL
 from .views import ProductVariantCreateView, ProductVariantDeleteView, ProductVariantListView, ProductVariantUpdateView
 from .views import StockEntryCreateView, StockEntryDeleteView, StockEntryListView, StockEntryUpdateView
 from .views import OrderCreateView, OrderDeleteView, OrderListView, OrderUpdateView
+from .views import ProductFAQListView, ProductFAQCreateView, ProductFAQUpdateView, ProductFAQDeleteView
 
 from apps.ecom.products_view import ProductCreateView2, get_attribute_values
 from .views import CategoryCreateView, CategoryDeleteView, CategoryListView, CategoryUpdateView, typesense_demo
@@ -127,4 +128,8 @@ urlpatterns = [
     path('generate-meta/', generate_meta, name='generate_meta'),
     path('generate-meta_category/', generate_meta, name='generate_meta_category'),
     path('dashboard-data/', get_dashboard_data, name='dashboard-data'),
+    path('productfaq/<int:pk>/delete/', ProductFAQDeleteView.as_view(), name='product_faq_delete'),
+    path('productfaq/<int:pk>/update/', ProductFAQUpdateView.as_view(), name='product_faq_update'),
+    path('productfaq/add/', ProductFAQCreateView.as_view(), name='product_faq_add'),
+    path('productfaq/', ProductFAQListView.as_view(), name='product_faq_list'),
 ]

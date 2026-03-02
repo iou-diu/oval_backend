@@ -9,7 +9,7 @@ from apps.ecom.mixins import AttributeValueWidget, AttributeWidget, CategoryWidg
     TagMultipleSelect2Widget
 from apps.lookup import CustomSelect2Mixin
 from .models import AttributeValue, Coupon, Order, Product, ProductAttribute, ProductImage, ProductVariant, Attribute, \
-    StockEntry, SupportTicket, SupportTicketMessage, Tag, Category, Tax
+    StockEntry, SupportTicket, SupportTicketMessage, Tag, Category, Tax, ProductFAQ
 from apps.cms.models import Catalog
 
 
@@ -1258,5 +1258,51 @@ class FlashDealFilterForm(forms.Form):
 
                 Column(HTML("""<button class='btn btn-sm btn-lg btn-primary'>Filter</button>"""),
                        css_class='form-group col-md-2 p-5 mb-0 mt-4'),
+            ),
+        )
+class ProductFAQForm(forms.ModelForm):
+    class Meta:
+        model = ProductFAQ
+        fields = ('product', 'question', 'answer')
+        widgets = {
+            'product': forms.Select(attrs={'class': 'form-control select2'}),
+            'question': forms.TextInput(attrs={'class': 'form-control'}),
+            'answer': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Row(
+                Column('product', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column('question', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column('answer', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column(
+                    Submit('submit', 'Save FAQ', css_class='btn btn-primary btn-lg px-10'),
+                    css_class='form-group col-md-12 text-center mt-5'
+                ),
+            ),
+        )
+
+
+class ProductFAQFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.layout = Layout(
+            Row(
+                Column('product', css_class='form-group col-md-4 mb-0'),
+                Column('question', css_class='form-group col-md-4 mb-0'),
+                Column(HTML("""<button class='btn btn-lg btn-primary mt-6'>Filter</button>"""),
+                       css_class='form-group col-md-4 mb-0'),
             ),
         )
