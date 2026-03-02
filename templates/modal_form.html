@@ -1,0 +1,31 @@
+{% load crispy_forms_tags %}
+<div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">{% if object %}Edit{% else %}Add{% endif %} {{ page_title }}</h5>
+    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form method="post" action="{{ request.path }}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="modal-body p-6">
+        {% crispy form %}
+    </div>
+</form>
+
+<script>
+    $(document).ready(function() {
+        // Initialize select2 for elements within the modal
+        $('.select2').select2({
+            dropdownParent: $('#modal')
+        });
+        
+        // Handle date inputs if any
+        $('input[type="date"]').addClass('form-control');
+    });
+</script>
+<style>
+    /* Ensure crispy form items don't have double padding/margin if nested */
+    .modal-body .form-group:last-child {
+        margin-bottom: 0;
+    }
+</style>

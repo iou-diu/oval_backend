@@ -93,12 +93,14 @@ class PageHeaderMixin:
     add_perms = None
     request = None
     show_selection = False
+    is_modal = False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         content_type = ContentType.objects.get_for_model(self.model, for_concrete_model=False)
         context['page_title'] = self.page_title
         context['show_selection'] = self.show_selection
+        context['is_modal'] = self.is_modal
         if self.add_link and self.request.user.has_perm(f'{content_type.app_label}.add_{content_type.model}'):
             context['add_link'] = self.add_link
         if self.list_link and self.request.user.has_perm(f'{content_type.app_label}.view_{content_type.model}'):
@@ -113,6 +115,7 @@ class CustomSingleTableMixin(SingleTableMixin):
     detail_url = None
     edit_url = None
     delete_url = None
+    modal_edit = False
 
     def get_table_kwargs(self):
         ctx = super().get_table_kwargs()
@@ -126,6 +129,7 @@ class CustomSingleTableMixin(SingleTableMixin):
         if self.delete_url:
             ctx['delete_url'] = self.delete_url
             ctx['delete_perms'] = self.request.user.has_perm(f'{content_type.app_label}.delete_{content_type.model}')
+        ctx['modal_edit'] = self.modal_edit
         if not ctx.get('view_perms', False) and not ctx.get('edit_perms', False) and not ctx.get('delete_perms', False):
             return {'exclude': ('action',)}
         else:
@@ -153,6 +157,7 @@ class CustomTable(tables.Table):
         self.detail_url = kwargs.pop('detail_url', None)
         self.edit_url = kwargs.pop('edit_url', None)
         self.delete_url = kwargs.pop('delete_url', None)
+        self.modal_edit = kwargs.pop('modal_edit', False)
         self.view_po = kwargs.pop('view_po', None)
 
         print(self.view_po)
@@ -167,7 +172,10 @@ class CustomTable(tables.Table):
             url.append('<a href="%s" class="btn btn-sm btn-light-info"><i class="flaticon-eye"></i></a>' % detail_url)
         if self.edit_perms and self.edit_url:
             edit_url = reverse(self.edit_url, args=[record.pk])
-            url.append('<a href="%s" class="btn btn-sm btn-light-warning"><i class="flaticon-edit"></i></a>' % edit_url)
+            if self.modal_edit:
+                url.append('<a href="javascript:void(0)" onclick="loadModal(\'%s\')" class="btn btn-sm btn-light-warning"><i class="flaticon-edit"></i></a>' % edit_url)
+            else:
+                url.append('<a href="%s" class="btn btn-sm btn-light-warning"><i class="flaticon-edit"></i></a>' % edit_url)
         if self.delete_perms and self.delete_url:
             del_url = reverse(self.delete_url, args=[record.pk])
             url.append('<a href="%s" class="btn btn-sm btn-light-danger"><i class="flaticon-delete"></i></a>' % del_url)

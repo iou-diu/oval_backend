@@ -1600,6 +1600,8 @@ class ProductFAQListView(PermissionRequiredMixin, LoginRequiredMixin, PageHeader
     edit_perms = 'ecom.change_productfaq'
     delete_perms = 'ecom.delete_productfaq'
     edit_url = 'product_faq_update'
+    is_modal = True
+    modal_edit = True
 
 class ProductFAQCreateView(PermissionRequiredMixin, LoginRequiredMixin, MessageMixin, PageHeaderMixin, CreateView):
     model = ProductFAQ
@@ -1611,6 +1613,11 @@ class ProductFAQCreateView(PermissionRequiredMixin, LoginRequiredMixin, MessageM
     list_link = reverse_lazy('product_faq_list')
     success_message = 'Product FAQ created successfully.'
 
+    def get_template_names(self):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['modal_form.html']
+        return super().get_template_names()
+
 class ProductFAQUpdateView(PermissionRequiredMixin, LoginRequiredMixin, MessageMixin, PageHeaderMixin, UpdateView):
     model = ProductFAQ
     form_class = ProductFAQForm
@@ -1621,8 +1628,14 @@ class ProductFAQUpdateView(PermissionRequiredMixin, LoginRequiredMixin, MessageM
     list_link = reverse_lazy('product_faq_list')
     success_message = 'Product FAQ updated successfully.'
 
+    def get_template_names(self):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return ['modal_form.html']
+        return super().get_template_names()
+
 class ProductFAQDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteMessageMixin, DeleteView):
     model = ProductFAQ
     success_url = reverse_lazy('product_faq_list')
     permission_required = 'ecom.delete_productfaq'
     success_message = 'Product FAQ deleted successfully.'
+

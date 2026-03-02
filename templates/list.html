@@ -24,9 +24,15 @@
                         {% endif %}
                         
                         {% if add_link %}
-                            <a href="{{ add_link }}" class="btn btn-light btn-sm d-flex align-items-center">
-                                <i class="fas fa-plus-circle me-1"></i> Add New
-                            </a>
+                            {% if is_modal %}
+                                <a href="javascript:void(0)" onclick="loadModal('{{ add_link }}')" class="btn btn-light btn-sm d-flex align-items-center">
+                                    <i class="fas fa-plus-circle me-1"></i> Add New
+                                </a>
+                            {% else %}
+                                <a href="{{ add_link }}" class="btn btn-light btn-sm d-flex align-items-center">
+                                    <i class="fas fa-plus-circle me-1"></i> Add New
+                                </a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -93,7 +99,7 @@
                 $('#modal').modal('show'); // Show the modal
             },
             error: function() {
-                alert('Failed to load expense details. Please try again.');
+                alert('Failed to load details. Please try again.');
             }
         });
     }
