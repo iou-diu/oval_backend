@@ -154,4 +154,63 @@ class Catalog(models.Model):
         verbose_name_plural = 'Catalogs'
 
     def __str__(self):
-        return self.title or 'Catalog Item' 
+        return self.title or 'Catalog Item'
+
+
+class CorporateLead(models.Model):
+    company_name = models.CharField(max_length=255)
+    contact_person = models.CharField(max_length=255)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    project_type = models.CharField(max_length=100)
+    budget_range = models.CharField(max_length=100, blank=True, null=True)
+    floor_plan = models.FileField(upload_to='corporate_leads/floor_plans/', blank=True, null=True)
+    project_details = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=(
+        ('new', 'New'),
+        ('contacted', 'Contacted'),
+        ('qualified', 'Qualified'),
+        ('lost', 'Lost'),
+        ('converted', 'Converted'),
+    ), default='new')
+    priority = models.CharField(max_length=20, choices=(
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('urgent', 'Urgent'),
+    ), default='medium')
+    assigned_to = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_leads')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Corporate Lead'
+        verbose_name_plural = 'Corporate Leads'
+
+    def __str__(self):
+        return f"{self.company_name} - {self.contact_person}"
+
+
+class CorporateLeadActivity(models.Model):
+    ACTIVITY_TYPES = (
+        ('note', 'Note/Remark'),
+        ('call', 'Call'),
+        ('email', 'Email'),
+        ('meeting', 'Meeting'),
+        ('status_change', 'Status Change'),
+    )
+    lead = models.ForeignKey(CorporateLead, on_delete=models.CASCADE, related_name='activities')
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    activity_type = models.CharField(max_length=20, choices=ACTIVITY_TYPES, default='note')
+    description = models.TextField()
+    followup_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Lead Activity'
+        verbose_name_plural = 'Lead Activities'
+
+    def __str__(self):
+        return f"{self.get_activity_type_display()} - {self.lead.company_name}"

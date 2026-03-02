@@ -7,10 +7,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django_filters.views import FilterView
 
-from apps.cms.models import HomeSlider, ContactForm, Catalog
-from apps.cms.forms import HomeSliderForm, CatalogForm, CatalogFilterForm
-from apps.cms.tables import CatalogTable
-from apps.cms.filters import CatalogFilter
+from apps.cms.models import HomeSlider, ContactForm, Catalog, CorporateLead, CorporateLeadActivity
+from apps.cms.forms import (
+    HomeSliderForm, CatalogForm, CatalogFilterForm, 
+    CorporateLeadForm, CorporateLeadFilterForm, CorporateLeadActivityForm
+)
+from apps.cms.tables import CatalogTable, CorporateLeadTable
+from apps.cms.filters import CatalogFilter, CorporateLeadFilter
 from apps.helpers import PageHeaderMixin, CustomSingleTableMixin, MessageMixin, DeleteMessageMixin, PermissionRequiredMixin
 from apps.ecom.models import Product
 from django.db.models import Q
@@ -163,3 +166,68 @@ class CatalogDetailView(PermissionRequiredMixin, LoginRequiredMixin, PageHeaderM
                 messages.success(request, f'Product "{product.name}" removed from catalog.')
         
         return redirect('catalog_detail', pk=catalog.pk)
+
+class CorporateLeadListView(PermissionRequiredMixin, LoginRequiredMixin, PageHeaderMixin, CustomSingleTableMixin, FilterView):
+    model = CorporateLead
+    table_class = CorporateLeadTable
+    template_name = 'list.html'
+    filterset_class = CorporateLeadFilter
+    page_title = 'Corporate Inquiries (Leads)'
+    permission_required = 'cms.view_corporatelead'
+    delete_url = 'corporate_lead_delete'
+    detail_url = 'corporate_lead_detail'
+
+
+class CorporateLeadDetailView(PermissionRequiredMixin, LoginRequiredMixin, PageHeaderMixin, MessageMixin, UpdateView):
+    model = CorporateLead
+    form_class = CorporateLeadForm
+    template_name = 'cms/corporate_lead_detail.html'
+    success_url = reverse_lazy('corporate_lead_list')
+    page_title = 'Inquiry Details'
+    list_link = reverse_lazy('corporate_lead_list')
+    permission_required = 'cms.change_corporatelead'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['activity_form'] = CorporateLeadActivityForm()
+        context['activities'] = self.object.activities.all()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        # Handle Activity Submission
+        if 'submit_activity' in request.POST:
+            activity_form = CorporateLeadActivityForm(request.POST)
+            if activity_form.is_valid():
+                activity = activity_form.save(commit=False)
+                activity.lead = self.object
+                activity.user = request.user
+                activity.save()
+                messages.success(request, "Activity recorded successfully.")
+                return redirect('corporate_lead_detail', pk=self.object.pk)
+        
+        # Handle Lead Update (Status/Priority/Assigned)
+        # We need to manually handle status change recording if changed
+        old_status = self.object.status
+        response = super().post(request, *args, **kwargs)
+        
+        # If lead was updated, check if status changed to log it automatically
+        new_status = CorporateLead.objects.get(pk=self.object.pk).status
+        if old_status != new_status:
+            CorporateLeadActivity.objects.create(
+                lead=self.object,
+                user=request.user,
+                activity_type='status_change',
+                description=f"Status changed from {dict(self.object._meta.get_field('status').choices).get(old_status)} to {self.object.get_status_display()}"
+            )
+            
+        return response
+
+
+class CorporateLeadDeleteView(PermissionRequiredMixin, LoginRequiredMixin, PageHeaderMixin, DeleteMessageMixin, DeleteView):
+    model = CorporateLead
+    template_name = 'delete.html'
+    success_url = reverse_lazy('corporate_lead_list')
+    page_title = 'Delete Lead'
+    permission_required = 'cms.delete_corporatelead'

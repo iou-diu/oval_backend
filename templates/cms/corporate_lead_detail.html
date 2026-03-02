@@ -1,0 +1,314 @@
+{% extends 'includes/main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <!--begin::Lead Header-->
+    <div class="card card-custom gutter-b shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between flex-column flex-md-row pt-8 pb-8 px-10">
+                <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center mb-3">
+                        <h1 class="display-4 font-weight-boldest text-dark mb-0 mr-6">{{ object.company_name }}</h1>
+                        <span class="label label-xl label-inline font-weight-bolder px-6 py-5
+                            {% if object.status == 'new' %}label-light-primary
+                            {% elif object.status == 'contacted' %}label-light-info
+                            {% elif object.status == 'qualified' %}label-light-success
+                            {% elif object.status == 'lost' %}label-light-danger
+                            {% elif object.status == 'converted' %}label-dark
+                            {% else %}label-light-warning{% endif %}">
+                            <i class="flaticon-info mr-2 {% if object.status == 'converted' %}text-white{% endif %}"></i>
+                            {{ object.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="d-flex flex-wrap font-weight-bold font-size-lg">
+                        <span class="text-muted mr-8 mb-2"><i class="flaticon2-user text-primary mr-2"></i>{{ object.contact_person }}</span>
+                        <span class="text-muted mr-8 mb-2"><i class="flaticon2-email text-primary mr-2"></i>{{ object.email }}</span>
+                        <span class="text-muted mb-2"><i class="flaticon2-calendar-3 text-primary mr-2"></i>Inquiry date: {{ object.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                <div class="d-flex flex-column text-md-right mt-5 mt-md-0 justify-content-center">
+                    <span class="text-muted font-weight-bolder text-uppercase font-size-sm mb-2 letter-spacing-lg">Account Manager</span>
+                    <div class="d-flex align-items-center justify-content-md-end">
+                        {% if object.assigned_to %}
+                            <div class="symbol symbol-45 symbol-light-primary mr-3 shadow-sm">
+                                <span class="symbol-label font-size-h4 font-weight-boldest text-uppercase">{{ object.assigned_to.username|slice:":1" }}</span>
+                            </div>
+                            <div class="d-flex flex-column text-left">
+                                <span class="text-dark font-weight-boldest font-size-h6 mb-0">{{ object.assigned_to.get_full_name|default:object.assigned_to.username }}</span>
+                                <span class="text-muted font-size-sm">Support Representative</span>
+                            </div>
+                        {% else %}
+                            <div class="symbol symbol-45 symbol-light-secondary mr-3 border">
+                                <span class="symbol-label"><i class="flaticon2-user text-muted"></i></span>
+                            </div>
+                            <span class="text-muted font-weight-bold italic">Awaiting Assignment</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Lead Header-->
+
+    <div class="row">
+        <div class="col-xl-8">
+            <!--begin::Card: Core Details-->
+            <div class="card card-custom gutter-b shadow-sm border-0">
+                <div class="card-header h-auto py-6 border-0">
+                    <div class="card-title">
+                        <span class="card-icon"><i class="flaticon2-layers-1 text-primary"></i></span>
+                        <h3 class="card-label font-weight-boldest text-dark">Technical Requirements</h3>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="row mb-12 bg-light-secondary p-8 rounded-xl mx-0 shadow-xs border">
+                        <div class="col-md-4 mb-5 mb-md-0">
+                            <span class="text-muted font-weight-bolder font-size-xs d-block text-uppercase mb-3 opacity-70">Project Category</span>
+                            <div class="font-weight-boldest text-dark font-size-h5">
+                                <span class="text-primary mr-2">#</span>{{ object.project_type }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 border-left-md mb-5 mb-md-0">
+                            <span class="text-muted font-weight-bolder font-size-xs d-block text-uppercase mb-3 opacity-70">Investment Range</span>
+                            <div class="font-weight-boldest text-dark font-size-h5">
+                                <span class="text-success mr-2">$</span>{{ object.budget_range|default:"Unstated" }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 border-left-md">
+                            <span class="text-muted font-weight-bolder font-size-xs d-block text-uppercase mb-3 opacity-70">Primary Contact</span>
+                            <div class="font-weight-boldest text-dark font-size-h5">
+                                <i class="flaticon2-phone text-warning mr-2"></i>{{ object.phone }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-10">
+                        <h4 class="font-weight-boldest text-dark mb-4">Submission Summary</h4>
+                        <div class="p-8 rounded-xl bg-white border border-secondary font-size-lg text-dark-75 line-height-xl shadow-xs" style="background-image: linear-gradient(to bottom right, #ffffff, #fafafa);">
+                            {{ object.project_details|linebreaks|default:"<span class='text-muted'>No additional project specification provided by the client.</span>" }}
+                        </div>
+                    </div>
+
+                    {% if object.floor_plan %}
+                    <div class="mt-10">
+                        <h4 class="font-weight-boldest text-dark mb-4">Architectural Assets</h4>
+                        <div class="card card-custom bg-light-primary border-primary border-dashed shadow-none rounded-xl">
+                            <div class="card-body py-6 px-8">
+                                <div class="d-flex align-items-center">
+                                    <div class="symbol symbol-60 symbol-primary mr-6 shadow-sm">
+                                        <span class="symbol-label">
+                                            <i class="flaticon-file-2 font-size-h1"></i>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex flex-column flex-grow-1">
+                                        <a href="{{ object.floor_plan.url }}" target="_blank" class="text-dark font-weight-boldest font-size-h5 mb-1 hover-primary transition-2ms">Project_Floor_Plan_{{ object.pk }}.pdf</a>
+                                        <span class="text-muted font-weight-bold font-size-sm">Uploaded by client during initial inquiry</span>
+                                    </div>
+                                    <div class="ml-4">
+                                        <a href="{{ object.floor_plan.url }}" target="_blank" class="btn btn-primary font-weight-boldest px-8 py-4 shadow-sm">
+                                            <i class="flaticon2-download mr-1"></i> Preview Asset
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <!--end::Card-->
+
+            <!--begin::Card: Activities-->
+            <div class="card card-custom gutter-b shadow-sm border-0">
+                <div class="card-header align-items-center border-0 py-6">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="font-weight-boldest text-dark">Communication Log</span>
+                        <span class="text-muted mt-2 font-weight-bold font-size-sm">Comprehensive nurture and interaction history</span>
+                    </h3>
+                    <div class="card-toolbar">
+                         <span class="badge badge-primary font-weight-bold">{{ activities.count }} Total Activities</span>
+                    </div>
+                </div>
+                <div class="card-body pt-2">
+                    <div class="timeline timeline-6 mt-4">
+                        {% for activity in activities %}
+                        <div class="timeline-item align-items-start mb-10">
+                            <div class="timeline-label font-weight-boldest text-muted font-size-sm">
+                                {{ activity.created_at|date:"M d" }}<br/>
+                                <small class="opacity-50 text-uppercase">{{ activity.created_at|date:"H:i" }}</small>
+                            </div>
+                            <div class="timeline-badge mb-5">
+                                <i class="fa fa-genderless 
+                                    {% if activity.activity_type == 'status_change' %}text-info
+                                    {% elif activity.activity_type == 'meeting' %}text-primary
+                                    {% elif activity.activity_type == 'call' %}text-success
+                                    {% elif activity.activity_type == 'email' %}text-warning
+                                    {% else %}text-danger{% endif %} icon-xl"></i>
+                            </div>
+                            <div class="timeline-content d-flex mb-2">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div>
+                                            <span class="text-dark-75 font-weight-boldest font-size-h6 mr-2">{{ activity.get_activity_type_display }}</span>
+                                            <span class="text-muted font-weight-bold">recorded by <span class="text-primary font-weight-bolder">{{ activity.user.get_full_name|default:activity.user.username }}</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="p-5 rounded-lg font-size-lg shadow-xs border-left border-4 mb-3
+                                        {% if activity.activity_type == 'status_change' %}bg-light-info border-info
+                                        {% elif activity.activity_type == 'meeting' %}bg-light-primary border-primary
+                                        {% elif activity.activity_type == 'call' %}bg-light-success border-success
+                                        {% elif activity.activity_type == 'email' %}bg-light-warning border-warning
+                                        {% else %}bg-light-danger border-danger{% endif %}">
+                                        {{ activity.description|linebreaksbr }}
+                                    </div>
+                                    {% if activity.followup_date %}
+                                    <div class="d-inline-flex align-items-center bg-light-danger py-2 px-4 rounded-pill border border-danger">
+                                        <i class="flaticon-alarm-1 mr-2 text-danger font-size-sm"></i> 
+                                        <span class="text-danger font-weight-boldest font-size-xs text-uppercase">Follow-up: {{ activity.followup_date }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-24">
+                            <img src="{% static 'media/svg/illustrations/working.svg' %}" class="h-150px mb-8 opacity-20" alt="No data"/>
+                            <h5 class="text-muted font-weight-bold">Zero communication records.</h5>
+                            <p class="text-muted font-size-sm">Start your relationship by logging your first interaction today.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <!--end::Card-->
+        </div>
+
+        <div class="col-xl-4">
+            <!--begin::Card: Status Update-->
+            <div class="card card-custom gutter-b shadow-lg border-0 bg-dark text-white">
+                <div class="card-header h-auto py-6 border-0">
+                    <div class="card-title">
+                        <i class="flaticon2-settings text-primary mr-3"></i>
+                        <h3 class="card-label font-weight-boldest text-white">Management</h3>
+                    </div>
+                </div>
+                <div class="card-body pt-0 dark-form">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-8">
+                            <label class="font-weight-boldest text-muted text-uppercase font-size-xs letter-spacing-lg mb-3 d-block">Pipeline Location</label>
+                            {{ form.status|as_crispy_field }}
+                        </div>
+                        <div class="row mb-8">
+                            <div class="col-6 pr-2">
+                                <label class="font-weight-boldest text-muted text-uppercase font-size-xs letter-spacing-lg mb-3 d-block">Urgency</label>
+                                {{ form.priority|as_crispy_field }}
+                            </div>
+                            <div class="col-6 pl-2">
+                                <label class="font-weight-boldest text-muted text-uppercase font-size-xs letter-spacing-lg mb-3 d-block">Staff Focus</label>
+                                {{ form.assigned_to|as_crispy_field }}
+                            </div>
+                        </div>
+                        <button type="submit" name="submit" class="btn btn-primary btn-lg btn-block font-weight-boldest py-5 shadow-sm text-uppercase letter-spacing-lg">
+                            Apply Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <!--end::Card-->
+
+            <!--begin::Card: Interaction Form-->
+            <div class="card card-custom gutter-b shadow-sm border-0 overflow-hidden">
+                <div class="card-header h-auto py-6 border-0">
+                    <div class="card-title">
+                        <i class="flaticon2-chat-1 text-success mr-3"></i>
+                        <h3 class="card-label font-weight-boldest text-dark">Log Interaction</h3>
+                    </div>
+                    <div class="card-toolbar">
+                        <span class="label label-success label-dot mr-2"></span>
+                        <span class="font-weight-bold font-size-xs text-success text-uppercase">Active Note</span>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row mb-4">
+                            <div class="col-6 pr-2">
+                                {{ activity_form.activity_type|as_crispy_field }}
+                            </div>
+                            <div class="col-6 pl-2">
+                                {{ activity_form.followup_date|as_crispy_field }}
+                            </div>
+                        </div>
+                        {{ activity_form.description|as_crispy_field }}
+                        <button type="submit" name="submit_activity" class="btn btn-success btn-lg btn-block font-weight-boldest py-5 shadow-sm text-uppercase letter-spacing-lg mt-6">
+                            Record Interaction
+                        </button>
+                    </form>
+                </div>
+                <div class="card-footer bg-light-success py-4 border-0">
+                    <p class="font-size-xs font-weight-bold text-success mb-0">Record all client communications to maintain data integrity across the sales team.</p>
+                </div>
+            </div>
+            <!--end::Card-->
+
+            <!--begin::Card: Delete-->
+            <div class="card card-custom bg-light-danger-o-50 shadow-none border-dashed border-danger gutter-b mt-12">
+                <div class="card-body py-6">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex flex-column mr-4">
+                            <span class="text-danger font-weight-boldest font-size-h6">Removal Action</span>
+                            <span class="text-danger opacity-70 font-size-xs">Permanently delete this inquiry from the system.</span>
+                        </div>
+                        <a href="{% url 'corporate_lead_delete' object.pk %}" class="btn btn-danger font-weight-boldest px-6 py-4 shadow-sm" onclick="return confirm('WARNING: This action cannot be undone. Are you sure?');">
+                            Delete Lead
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+    .font-weight-boldest { font-weight: 900 !important; }
+    .letter-spacing-lg { letter-spacing: 0.1rem; }
+    .transition-2ms { transition: all 0.2s ease; }
+    .shadow-xs { box-shadow: 0 .125rem .25rem rgba(0,0,0,.04)!important; }
+    .rounded-xl { border-radius: 1.25rem !important; }
+    .bg-light-secondary { background: #f9fbfd !important; }
+    
+    /* Timeline 6 Override */
+    .timeline.timeline-6:before { left: 81px !important; background-color: #ebedf3; }
+    .timeline.timeline-6 .timeline-item .timeline-label { width: 80px !important; padding-right: 25px !important; color: #b5b5c3; }
+    .timeline.timeline-6 .timeline-item .timeline-badge { width: 14px; height: 14px; margin-left: -7px; border: 3px solid #fff; box-shadow: 0 0 0 4px #fff; }
+    .timeline.timeline-6 .timeline-item .timeline-content { padding-left: 35px !important; }
+    
+    .display-4 { font-size: 2.5rem !important; }
+    .italic { font-style: italic; }
+    
+    /* Dark Form Overrides */
+    .dark-form label { color: #808080 !important; }
+    .dark-form .form-control { background: #252837 !important; border: 1px solid #32364a !important; color: #fff !important; height: 50px !important; border-radius: 0.8rem; }
+    
+    /* Standard Input Styling */
+    .form-control { height: 50px !important; border-radius: 0.8rem !important; border: 1px solid #e4e6ef; font-size: 1rem; }
+    textarea.form-control { height: auto !important; padding: 1rem; }
+    
+    @media (min-width: 768px) {
+        .border-left-md { border-left: 1px solid #eef0f3; }
+    }
+    
+    /* Animation for hovering assets */
+    .hover-primary:hover { color: #3699FF !important; text-decoration: none; }
+    
+    /* Sticky side management card */
+    @media (min-width: 1200px) {
+        .col-xl-4 { position: sticky; top: 120px; align-self: start; }
+    }
+</style>
+{% endblock %}

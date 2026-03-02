@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit, HTML
-from apps.cms.models import HomeSlider, Catalog
+from apps.cms.models import HomeSlider, Catalog, CorporateLead, CorporateLeadActivity
 
 class HomeSliderForm(forms.ModelForm):
     class Meta:
@@ -114,5 +114,85 @@ class CatalogFilterForm(forms.Form):
                 Column('is_featured', css_class='form-group col-md-2 mb-0'),
                 Column(HTML("""<button class='btn btn-lg btn-primary'>Filter</button>"""),
                        css_class='form-group col-md-2 p-5 mb-0'),
+            ),
+        )
+
+class CorporateLeadForm(forms.ModelForm):
+    class Meta:
+        model = CorporateLead
+        fields = ['status', 'priority', 'assigned_to', 'project_details']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'priority': forms.Select(attrs={'class': 'form-control'}),
+            'assigned_to': forms.Select(attrs={'class': 'form-control select2'}),
+            'project_details': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Row(
+                Column('status', css_class='form-group col-md-6 mb-0'),
+                Column('priority', css_class='form-group col-md-6 mb-0'),
+            ),
+            Row(
+                Column('assigned_to', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column('project_details', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column(
+                    Submit('submit', 'Update Lead', css_class='btn btn-primary btn-lg px-10'),
+                    css_class='form-group col-md-12 text-center mt-5'
+                ),
+            ),
+        )
+
+
+class CorporateLeadActivityForm(forms.ModelForm):
+    class Meta:
+        model = CorporateLeadActivity
+        fields = ['activity_type', 'description', 'followup_date']
+        widgets = {
+            'activity_type': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write notes or interaction details...'}),
+            'followup_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Row(
+                Column('activity_type', css_class='form-group col-md-6'),
+                Column('followup_date', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('description', css_class='form-group col-md-12'),
+            ),
+            Row(
+                Column(
+                    Submit('submit_activity', 'Add Note', css_class='btn btn-success btn-block'),
+                    css_class='col-md-12'
+                ),
+            ),
+        )
+
+
+class CorporateLeadFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.layout = Layout(
+            Row(
+                Column('company_name', css_class='form-group col-md-4 mb-0'),
+                Column('status', css_class='form-group col-md-4 mb-0'),
+                Column(HTML("""<button class='btn btn-lg btn-primary mt-6'>Filter</button>"""),
+                       css_class='form-group col-md-4 mb-0'),
             ),
         )

@@ -138,6 +138,17 @@
                     </a>
                 </li>
 
+                <!-- Corporate Leads -->
+                <li
+                        class="menu-item {% if request.resolver_match.url_name|in_url_group:'corporate_leads' %}menu-item-active{% endif %}"
+                        aria-haspopup="true"
+                >
+                    <a href="{% url 'corporate_lead_list' %}" class="menu-link">
+                        <i class="menu-icon fas fa-user-tie text-success"></i>
+                        <span class="menu-text font-weight-bold">Corporate Leads</span>
+                    </a>
+                </li>
+
                 <!-- Stock Management -->
                 <li
                         class="menu-item menu-item-submenu {% if request.resolver_match.url_name|in_url_group:'stocks' or request.resolver_match.url_name|in_url_group:'productvariants' %} menu-item-open {% endif %}"
@@ -610,7 +621,7 @@
                     aria-haspopup="true"
                     data-menu-toggle="hover">
                     <a href="javascript:;" class="menu-link menu-toggle">
-                        <i class="menu-icon fa fa-users"></i>
+                        <i class="menu-icon fas fa-laptop-house"></i>
                         <span class="menu-text">CMS</span>
                         <i class="menu-arrow"></i>
                     </a>
@@ -620,7 +631,7 @@
                             <li class="menu-item {% if request.resolver_match.url_name == 'home_slider' %}active_link{% endif %}"
                                 aria-haspopup="true">
                                 <a href="{% url 'home_slider' %}" class="menu-link">
-                                    <i class="menu-icon fa fa-user-secret"></i>
+                                    <i class="menu-icon fas fa-images"></i>
                                     <span class="menu-text">Home Slider</span>
                                 </a>
                             </li>
@@ -628,7 +639,7 @@
                             <li class="menu-item {% if request.resolver_match.url_name == 'hotspot_list' %}active_link{% endif %}"
                                 aria-haspopup="true">
                                 <a href="{% url 'hotspot_list' %}" class="menu-link">
-                                    <i class="menu-icon fa fa-user-secret"></i>
+                                    <i class="menu-icon fas fa-bullseye"></i>
                                     <span class="menu-text">Hotspot</span>
                                 </a>
                             </li>

@@ -4,13 +4,13 @@ from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
-from apps.cms.models import HomeSlider, Gallery, Brochure, NewsPress, ContactForm, Catalog
+from apps.cms.models import HomeSlider, Gallery, Brochure, NewsPress, ContactForm, Catalog, CorporateLead
 from apps.solutions.models import Solution
 from .serializers import (
     HomeSliderSerializer, GallerySerializer, BrochureSerializer, 
     NewsPressSerializer, NewsPressListSerializer, SolutionDetailSerializer, 
     SolutionListSerializer, ContactFormSerializer, CatalogListSerializer, 
-    CatalogDetailSerializer
+    CatalogDetailSerializer, CorporateLeadSerializer
 )
 
 
@@ -161,3 +161,15 @@ class CatalogViewSet(viewsets.ModelViewSet):
     #         if not self.request.user.is_staff:
     #             self.permission_denied(self.request, message="Only staff can create, edit, or delete catalogs.")
     #     return [permission() for permission in permission_classes]
+
+class CorporateLeadViewSet(mixins.CreateModelMixin,
+                          viewsets.GenericViewSet):
+    """
+    Public API for submitting corporate inquiries (Leads).
+    """
+    queryset = CorporateLead.objects.all()
+    serializer_class = CorporateLeadSerializer
+    permission_classes = [AllowAny]
+    authentication_classes = []  # Public API
+
+    http_method_names = ['post']

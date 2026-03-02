@@ -31,7 +31,8 @@ def in_url_group(url_name, group_name):
         'flash_deals': ['flash_deals','flash_deal_create','flash_deal_edit','flash_deals_delete'],
         'settings': ['businesslocation_list','businesslocation_add','businesslocation_update','businesslocation_delete'],
         'catalogs': ['catalog_list', 'catalog_create', 'catalog_update', 'catalog_delete', 'catalog_detail'],
-        'product_faqs': ['product_faq_list', 'product_faq_add', 'product_faq_update', 'product_faq_delete']
+        'product_faqs': ['product_faq_list', 'product_faq_add', 'product_faq_update', 'product_faq_delete'],
+        'corporate_leads': ['corporate_lead_list', 'corporate_lead_detail', 'corporate_lead_delete']
     }
     return url_name in groups.get(group_name, [])
 
