@@ -4,10 +4,14 @@ from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
-from apps.cms.models import HomeSlider, Gallery, Brochure, NewsPress, ContactForm
+from apps.cms.models import HomeSlider, Gallery, Brochure, NewsPress, ContactForm, Catalog
 from apps.solutions.models import Solution
-from .serializers import HomeSliderSerializer, GallerySerializer, BrochureSerializer, NewsPressSerializer, \
-    NewsPressListSerializer, SolutionDetailSerializer, SolutionListSerializer, ContactFormSerializer
+from .serializers import (
+    HomeSliderSerializer, GallerySerializer, BrochureSerializer, 
+    NewsPressSerializer, NewsPressListSerializer, SolutionDetailSerializer, 
+    SolutionListSerializer, ContactFormSerializer, CatalogListSerializer, 
+    CatalogDetailSerializer
+)
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -135,3 +139,24 @@ class ContactFormViewSet(mixins.CreateModelMixin,
     serializer_class = ContactFormSerializer
     permission_classes = [AllowAny]
     authentication_classes = []  # Public API
+
+
+class CatalogViewSet(viewsets.ModelViewSet):
+    queryset = Catalog.objects.filter(is_published=True).order_by('-created_at')
+    authentication_classes = [CsrfExemptSessionAuthentication, TokenAuthentication]
+    lookup_field = 'slug'
+    http_method_names = ['get']
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return CatalogDetailSerializer
+        return CatalogListSerializer
+
+    # def get_permissions(self):
+    #     if self.action in ['list', 'retrieve']:
+    #         permission_classes = [AllowAny]
+    #     else:
+    #         permission_classes = [IsAuthenticated]
+    #         if not self.request.user.is_staff:
+    #             self.permission_denied(self.request, message="Only staff can create, edit, or delete catalogs.")
+    #     return [permission() for permission in permission_classes]

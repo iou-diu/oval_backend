@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from apps.cms.models import HomeSlider, Gallery, Brochure, NewsPress, ContactForm
+from apps.cms.models import HomeSlider, Gallery, Brochure, NewsPress, ContactForm, Catalog
 from apps.solutions.models import Solution
+from api.ecom.serializers import ProductSerializer
 
 
 class HomeSliderSerializer(serializers.ModelSerializer):
@@ -57,3 +58,17 @@ class ContactFormSerializer(serializers.ModelSerializer):
         model = ContactForm
         fields = '__all__'
         read_only_fields = ['created_at']
+
+
+class CatalogListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Catalog
+        fields = ['id', 'title', 'tagline', 'slug', 'thumbnail_image', 'is_published', 'is_featured', 'published_date']
+
+
+class CatalogDetailSerializer(serializers.ModelSerializer):
+    catalog_products = ProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Catalog
+        fields = '__all__'
