@@ -1,13 +1,19 @@
 {% load crispy_forms_tags %}
-<div class="modal-header bg-primary text-white">
-    <h5 class="modal-title">{% if object %}Edit{% else %}Add{% endif %} {{ page_title }}</h5>
-    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
+<div class="modal-header border-0 pb-0 pt-8 px-8">
+    <div class="d-flex flex-column">
+        <h4 class="modal-title font-weight-bolder text-dark">
+            {% if object %}Edit{% else %}Add{% endif %} {{ page_title }}
+        </h4>
+        <span class="text-muted font-weight-bold font-size-sm">Please fill in the details below.</span>
+    </div>
+    <button type="button" class="close text-dark-50" data-dismiss="modal" aria-label="Close">
+        <i aria-hidden="true" class="ki ki-close"></i>
     </button>
 </div>
+
 <form method="post" action="{{ request.path }}" enctype="multipart/form-data">
     {% csrf_token %}
-    <div class="modal-body p-6">
+    <div class="modal-body p-8">
         {% crispy form %}
     </div>
 </form>
@@ -15,17 +21,69 @@
 <script>
     $(document).ready(function() {
         // Initialize select2 for elements within the modal
-        $('.select2').select2({
-            dropdownParent: $('#modal')
+        const $productSelect = $('#id_product');
+        $('.select2').each(function() {
+            $(this).select2({
+                dropdownParent: $('#modal'),
+                width: '100%'
+            });
         });
         
-        // Handle date inputs if any
-        $('input[type="date"]').addClass('form-control');
+        // Toggle Product Field Visibility based on Type
+        function toggleProductField() {
+            const selectedType = $('#id_type').val();
+            const productCol = $('.product-column');
+            
+            if (selectedType === 'product') {
+                productCol.removeClass('d-none').show();
+            } else {
+                productCol.hide().addClass('d-none');
+            }
+        }
+
+        // Bind change event to type dropdown
+        $('#id_type').on('change', function() {
+            toggleProductField();
+        });
+
+        // Initial run
+        toggleProductField();
+
+        // Style tweaks for Metronic/Bootstrap consistency
+        $('.modal-body .form-group').addClass('mb-6');
+        $('.modal-body .btn-primary').addClass('btn-pill font-weight-bold px-12 py-3 btn-shadow-hover');
     });
 </script>
+
 <style>
-    /* Ensure crispy form items don't have double padding/margin if nested */
-    .modal-body .form-group:last-child {
-        margin-bottom: 0;
+    .modal-header .close {
+        padding: 1.5rem 1.75rem;
+    }
+    .product-column {
+        transition: all 0.3s ease;
+    }
+    /* Modal Shadow and Radius */
+    .modal-content {
+        border-radius: 1.5rem !important;
+        border: none !important;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+    }
+    /* Form Label Styling */
+    .modal-body label {
+        font-weight: 600;
+        color: #3F4254;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    /* Input Styling */
+    .modal-body .form-control {
+        border-radius: 0.65rem;
+        border: 1px solid #E4E6EF;
+        padding: 0.75rem 1rem;
+        height: auto;
+    }
+    .modal-body .form-control:focus {
+        border-color: #3699FF;
+        box-shadow: none;
     }
 </style>

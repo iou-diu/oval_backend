@@ -1278,7 +1278,7 @@ class ProductFAQForm(forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column('type', css_class='form-group col-md-6 mb-0'),
-                Column('product', css_class='form-group col-md-6 mb-0'),
+                Column('product', css_class='form-group col-md-6 mb-0 product-column'),
             ),
             Row(
                 Column('question', css_class='form-group col-md-12 mb-0'),
