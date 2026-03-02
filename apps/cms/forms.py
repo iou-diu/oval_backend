@@ -17,15 +17,43 @@ class HomeSliderForm(forms.ModelForm):
             'order': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Row(
+                Column('type', css_class='form-group col-md-4 mb-0'),
+                Column('title', css_class='form-group col-md-8 mb-0'),
+            ),
+            Row(
+                Column('description', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column('image', css_class='form-group col-md-6 mb-0'),
+                Column('button_title', css_class='form-group col-md-6 mb-0'),
+            ),
+            Row(
+                Column('button_link', css_class='form-group col-md-9 mb-0'),
+                Column('order', css_class='form-group col-md-3 mb-0'),
+            ),
+            Row(
+                Column(
+                    Submit('submit', 'Save Slider', css_class='btn btn-primary btn-lg px-10'),
+                    css_class='form-group col-md-12 text-center mt-5'
+                ),
+            ),
+        )
+
 class CatalogForm(forms.ModelForm):
     class Meta:
         model = Catalog
-        fields = [
+        fields = (
             'tagline', 'title', 'slug', 'description', 
             'banner_image', 'thumbnail_image', 
             'is_published', 'is_featured', 
             'published_date', 'meta_description'
-        ]
+        )
         widgets = {
             'tagline': forms.TextInput(attrs={'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
@@ -38,6 +66,41 @@ class CatalogForm(forms.ModelForm):
             'published_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'meta_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Row(
+                Column('title', css_class='form-group col-md-6 mb-0'),
+                Column('slug', css_class='form-group col-md-6 mb-0'),
+            ),
+            Row(
+                Column('tagline', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column('description', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column('banner_image', css_class='form-group col-md-6 mb-0'),
+                Column('thumbnail_image', css_class='form-group col-md-6 mb-0'),
+            ),
+            Row(
+                Column('published_date', css_class='form-group col-md-4 mb-0'),
+                Column('is_published', css_class='form-group col-md-4 mb-0 p-10'),
+                Column('is_featured', css_class='form-group col-md-4 mb-0 p-10'),
+            ),
+            Row(
+                Column('meta_description', css_class='form-group col-md-12 mb-0'),
+            ),
+            Row(
+                Column(
+                    Submit('submit', 'Save Catalog', css_class='btn btn-primary btn-lg px-10'),
+                    css_class='form-group col-md-12 text-center mt-5'
+                ),
+            ),
+        )
 
 class CatalogFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
