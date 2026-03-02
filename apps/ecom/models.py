@@ -7,6 +7,8 @@ import string
 
 from django.db.models import SET_NULL
 from django.utils.text import slugify
+
+from apps.cms.models import Catalog
 from apps.user.models import CustomUser, CustomerUser
 from decimal import Decimal
 
@@ -174,6 +176,8 @@ class Product(models.Model):
     is_saleable = models.BooleanField(default=True)  # If the product is on sale
 
     is_shop_featured = models.BooleanField(default=False)  # If the product is featured in the shop
+
+    catalog = models.ForeignKey(Catalog, on_delete=models.SET_NULL, null=True, blank=True, related_name='catalog_products')  # Catalog reference
 
     def __str__(self):
         return self.name

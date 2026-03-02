@@ -10,6 +10,7 @@ from apps.ecom.mixins import AttributeValueWidget, AttributeWidget, CategoryWidg
 from apps.lookup import CustomSelect2Mixin
 from .models import AttributeValue, Coupon, Order, Product, ProductAttribute, ProductImage, ProductVariant, Attribute, \
     StockEntry, SupportTicket, SupportTicketMessage, Tag, Category, Tax
+from apps.cms.models import Catalog
 
 
 class CategoryForm(forms.ModelForm):
@@ -419,7 +420,7 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = (
-            'name', 'category', 'brand', 'is_variant', 'is_featured', 'unit', 'min_order_quantity',
+            'name', 'category', 'brand', 'catalog', 'is_variant', 'is_featured', 'unit', 'min_order_quantity',
             'max_order_quantity', 'description', 'key_features', 'meta_title', 'meta_description',
             'is_active', 'warranty', 'tags', 'is_saleable'
         )
@@ -427,6 +428,7 @@ class ProductForm(forms.ModelForm):
         widgets = {
             'description': SummernoteWidget(),
             'key_features': SummernoteWidget(),
+            'catalog': forms.Select(attrs={'class': 'form-control select2-widget'}),
             # 'category': CategoryWidget(attrs={
             #     'data-minimum-input-length': 0,
             #     'class': 'form-control select2-widget'
@@ -454,8 +456,9 @@ class ProductForm(forms.ModelForm):
                 Column('category', css_class='form-group col-md-6 mb-3'),
             ),
             Row(
-                Column('brand', css_class='form-group col-md-6 mb-3'),
-                Column('unit', css_class='form-group col-md-6 mb-3'),
+                Column('brand', css_class='form-group col-md-4 mb-3'),
+                Column('catalog', css_class='form-group col-md-4 mb-3'),
+                Column('unit', css_class='form-group col-md-4 mb-3'),
             ),
             Row(
                 Column('is_variant', css_class='form-group col-md-4 mb-3'),
@@ -584,9 +587,10 @@ class ProductFilterForm(forms.Form):
         self.helper.form_method = 'get'
         self.helper.layout = Layout(
             Row(
-                Column('name', css_class='form-group col-md-4 mb-0'),
-                Column('category', css_class='form-group col-md-4 mb-0'),
-                Column('brand', css_class='form-group col-md-4 mb-0'),
+                Column('name', css_class='form-group col-md-3 mb-0'),
+                Column('category', css_class='form-group col-md-3 mb-0'),
+                Column('brand', css_class='form-group col-md-2 mb-0'),
+                Column('catalog', css_class='form-group col-md-2 mb-0'),
 
                 Column(HTML("""<button class='btn btn-lg btn-primary'>Filter</button>"""),
                        css_class='form-group col-md-2 p-5 mb-0'),

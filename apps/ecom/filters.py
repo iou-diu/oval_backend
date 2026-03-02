@@ -71,11 +71,11 @@ class TaxFilter(django_filters.FilterSet):
 class ProductFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
     category = django_filters.CharFilter(field_name='category__name', lookup_expr='icontains')
-    brand = django_filters.CharFilter(field_name='brand__name', lookup_expr='icontains')
+    catalog = django_filters.CharFilter(field_name='catalog__title', lookup_expr='icontains')
 
     class Meta:
         model = Product
-        fields = ['name', 'category', 'brand']
+        fields = ['name', 'category', 'brand', 'catalog']
         form = ProductFilterForm
 
 

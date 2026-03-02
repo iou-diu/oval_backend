@@ -1,0 +1,179 @@
+{% extends 'includes/main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Catalog Details -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="m-0">Catalog Details</h5>
+                    <a href="{% url 'catalog_update' catalog.pk %}" class="btn btn-light btn-sm">Edit</a>
+                </div>
+                <div class="card-body">
+                    {% if catalog.banner_image %}
+                        <div class="mb-3">
+                            <img src="{{ catalog.banner_image.url }}" class="img-fluid rounded" alt="Banner" style="max-height: 200px; width: 100%; object-fit: cover;">
+                        </div>
+                    {% endif %}
+                    <h4 class="fw-bold">{{ catalog.title }}</h4>
+                    {% if catalog.tagline %}
+                        <p class="text-muted small">{{ catalog.tagline }}</p>
+                    {% endif %}
+                    {% if catalog.description %}
+                        <div class="my-3">
+                            {{ catalog.description|linebreaks }}
+                        </div>
+                    {% endif %}
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><strong>Published:</strong></span>
+                        <span class="badge {% if catalog.is_published %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ catalog.is_published|yesno:"Yes,No" }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><strong>Featured:</strong></span>
+                        <span class="badge {% if catalog.is_featured %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ catalog.is_featured|yesno:"Yes,No" }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><strong>Published Date:</strong></span>
+                        <span>{{ catalog.published_date|default:"-" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><strong>Views:</strong></span>
+                        <span>{{ catalog.no_of_view }}</span>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{% url 'catalog_list' %}" class="btn btn-outline-primary btn-sm w-100">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Management -->
+        <div class="col-md-8">
+            <!-- Search Products to Add -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="m-0"><i class="fas fa-search me-2"></i>Add Products to Catalog</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" placeholder="Search products by name or slug..." value="{{ search_query }}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if search_products %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Category</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in search_products %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ product.name }}</div>
+                                                <div class="small text-muted">{{ product.slug }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border">
+                                                    {{ product.category.name|default:"Uncategorized" }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end">
+                                                <form method="POST" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                    <input type="hidden" name="action" value="add">
+                                                    <button type="submit" class="btn btn-sm btn-success px-3">
+                                                        <i class="fas fa-plus me-1"></i> Add
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% elif search_query %}
+                        <div class="text-center py-4 bg-light rounded">
+                            <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                            <p class="m-0 text-muted">No products found matching "<strong>{{ search_query }}</strong>".</p>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3 text-muted">
+                            <p class="m-0">Search for products to add them to this catalog.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Products in Catalog -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="m-0"><i class="fas fa-list me-2"></i>Products in this Catalog</h5>
+                    <span class="badge bg-light text-dark">{{ catalog_products.count }} Products</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle border">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="50">#</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in catalog_products %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            <div class="fw-bold">{{ product.name }}</div>
+                                            <div class="small text-muted">{{ product.slug }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">
+                                                {{ product.category.name|default:"Uncategorized" }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove this product from the catalog?')">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                <input type="hidden" name="action" value="remove">
+                                                <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Remove from catalog">
+                                                    <i class="fas fa-trash-alt"></i> Remove
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5 bg-light rounded">
+                                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                                            <p class="m-0 text-muted">No products assigned to this catalog yet.</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

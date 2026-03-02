@@ -12,7 +12,7 @@ class HomeSlider(models.Model):
     button_link = models.TextField(blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
 
-    class Meta: 
+    class Meta:
         ordering = ['order']
         verbose_name = 'Home Slider'
         verbose_name_plural = 'Home Sliders'
@@ -129,3 +129,29 @@ class ContactForm(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.subject or 'No Subject'}"
+
+
+class Catalog(models.Model):
+    tagline = models.CharField(max_length=100, blank=True, null=True)
+    title = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=500)
+    description = models.TextField(null=True, blank=True)
+
+    banner_image = models.ImageField(upload_to='catalog_banner', null=True, blank=True)
+    thumbnail_image = models.ImageField(upload_to='catalog_thumb', null=True, blank=True)
+
+    is_published = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
+
+    published_date = models.DateField(null=True, blank=True)
+    no_of_view = models.IntegerField(default=0)
+    meta_description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Catalog'
+        verbose_name_plural = 'Catalogs'
+
+    def __str__(self):
+        return self.title or 'Catalog Item' 

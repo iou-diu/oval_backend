@@ -143,7 +143,7 @@ class ProductTable(CustomTable):
     class Meta:
         model = Product
         template_name = 'django_tables2/bootstrap4.html'
-        fields = ['name', 'category', 'brand',  'slug', 'is_active', 'created_at', 'attributes'
+        fields = ['name', 'category', 'brand', 'catalog', 'slug', 'is_active', 'created_at', 'attributes'
         ]
         empty_text = 'No products available'
         orderable = True
