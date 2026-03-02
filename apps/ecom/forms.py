@@ -1263,8 +1263,9 @@ class FlashDealFilterForm(forms.Form):
 class ProductFAQForm(forms.ModelForm):
     class Meta:
         model = ProductFAQ
-        fields = ('product', 'question', 'answer')
+        fields = ('type', 'product', 'question', 'answer')
         widgets = {
+            'type': forms.Select(attrs={'class': 'form-control'}),
             'product': forms.Select(attrs={'class': 'form-control select2'}),
             'question': forms.TextInput(attrs={'class': 'form-control'}),
             'answer': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
@@ -1276,7 +1277,8 @@ class ProductFAQForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
             Row(
-                Column('product', css_class='form-group col-md-12 mb-0'),
+                Column('type', css_class='form-group col-md-6 mb-0'),
+                Column('product', css_class='form-group col-md-6 mb-0'),
             ),
             Row(
                 Column('question', css_class='form-group col-md-12 mb-0'),
@@ -1300,9 +1302,10 @@ class ProductFAQFilterForm(forms.Form):
         self.helper.form_method = 'get'
         self.helper.layout = Layout(
             Row(
-                Column('product', css_class='form-group col-md-4 mb-0'),
-                Column('question', css_class='form-group col-md-4 mb-0'),
+                Column('type', css_class='form-group col-md-3 mb-0'),
+                Column('product', css_class='form-group col-md-3 mb-0'),
+                Column('question', css_class='form-group col-md-3 mb-0'),
                 Column(HTML("""<button class='btn btn-lg btn-primary mt-6'>Filter</button>"""),
-                       css_class='form-group col-md-4 mb-0'),
+                       css_class='form-group col-md-3 mb-0'),
             ),
         )

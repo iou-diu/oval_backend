@@ -72,3 +72,4 @@ class CatalogDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Catalog
         fields = '__all__'
+        

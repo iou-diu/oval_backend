@@ -529,7 +529,7 @@ class ProductFAQTable(CustomTable):
     class Meta:
         model = ProductFAQ
         template_name = 'django_tables2/bootstrap4.html'
-        fields = ('product', 'question', 'answer', 'created_at')
+        fields = ('type', 'product', 'question', 'answer', 'created_at')
         empty_text = 'No Product FAQs available'
         orderable = True
         exclude = ('selected',)

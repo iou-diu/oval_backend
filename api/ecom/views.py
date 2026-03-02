@@ -456,8 +456,8 @@ class ProductFAQViewSet(viewsets.ModelViewSet):
     serializer_class = ProductFAQSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['id', 'product', 'question', 'answer', 'created_at']
-    search_fields = ['name', 'description']
+    filterset_fields = ['id', 'type', 'product', 'question', 'answer', 'created_at']
+    search_fields = ['question', 'answer']
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

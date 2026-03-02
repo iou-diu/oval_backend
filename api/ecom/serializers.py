@@ -453,7 +453,7 @@ from apps.ecom.models import ProductFAQ
 class ProductFAQSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductFAQ
-        fields = ['id', 'product', 'question', 'answer', 'created_at']
+        fields = ['id', 'type', 'product', 'question', 'answer', 'created_at']
 
 
 from apps.ecom.models import Tax

@@ -124,5 +124,5 @@ class ProductFAQFilter(django_filters.FilterSet):
 
     class Meta:
         model = ProductFAQ
-        fields = ['product', 'question']
+        fields = ['type', 'product', 'question']
         form = ProductFAQFilterForm

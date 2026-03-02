@@ -629,12 +629,12 @@ class LoyaltyPoint(models.Model):
 
 # ProductFAQ model for frequently asked questions about a product
 class ProductFAQ(models.Model):
-    notification_type = models.CharField(max_length=50, choices=(
+    type = models.CharField(max_length=50, choices=(
         ('product', 'Product'),
         ('global', 'Global'),
         ('catalog', 'Catalog'),
-    ))  # Type of notification
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='faqs')  # Associated product
+    ), default='product')  # Type of notification
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='faqs', null=True, blank=True)  # Associated product
     question = models.CharField(max_length=255)  # FAQ question
     answer = models.TextField()  # FAQ answer
     created_at = models.DateTimeField(auto_now_add=True)  # Creation timestamp
