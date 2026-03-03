@@ -69,19 +69,15 @@ INSTALLED_APPS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://daffodilrobotics.com',
-    'https://daffodilrobotics.com',
-    'http://daffodil-robotics.vercel.app',
-    'https://daffodil-robotics.vercel.app',
-
     "http://localhost:3000",
     "http://localhost:3008",
-    "https://ecom.prochar.xyz",
-    "http://ecom.prochar.xyz",  # Include both HTTP and HTTPS versions
+
+    "https://oval.goedu.ac",
+
+
     "https://oval-furniture.vercel.app",
     "http://192.168.5.11:3000",
     "https://front.prochar.xyz",
-    "http://front.prochar.xyz",
 ]
 
 MIDDLEWARE = [
