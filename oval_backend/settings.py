@@ -78,7 +78,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://oval-furniture.vercel.app",
     "http://192.168.5.11:3000",
     "https://front.prochar.xyz",
-]
+] + config('CORS_ALLOWED_ORIGINS', default='', cast=Csv())
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -168,10 +168,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / '../staticfiles'
+STATIC_ROOT = config('STATIC_ROOT', default=str(BASE_DIR / '../staticfiles'))
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / '../media'
+MEDIA_ROOT = config('MEDIA_ROOT', default=str(BASE_DIR / '../media'))
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
@@ -226,22 +226,46 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%b %d, %Y',
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('REDIS_HOST', default='localhost')}:{config('REDIS_PORT', default='6379')}/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    },
-    "select2": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('REDIS_HOST', default='localhost')}:{config('REDIS_PORT', default='6379')}/2",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+# Redis when REDIS_HOST is set; an empty REDIS_HOST falls back to a file cache,
+# which (unlike LocMemCache) is shared by all gunicorn workers.
+REDIS_HOST = config('REDIS_HOST', default='localhost')
+REDIS_PORT = config('REDIS_PORT', default='6379')
+CACHE_DIR = config('CACHE_DIR', default=str(BASE_DIR / 'cache'))
+# Keeps keys apart from other projects that use the same Redis databases.
+CACHE_KEY_PREFIX = config('CACHE_KEY_PREFIX', default='')
+
+if REDIS_HOST:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/1",
+            "KEY_PREFIX": CACHE_KEY_PREFIX,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+        "select2": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/2",
+            "KEY_PREFIX": CACHE_KEY_PREFIX,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
         }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+            "LOCATION": os.path.join(CACHE_DIR, 'default'),
+            "KEY_PREFIX": CACHE_KEY_PREFIX,
+        },
+        "select2": {
+            "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+            "LOCATION": os.path.join(CACHE_DIR, 'select2'),
+            "KEY_PREFIX": CACHE_KEY_PREFIX,
+        }
+    }
 
 SELECT2_CACHE_BACKEND = "select2"
 # CORS_ALLOW_ALL_ORIGINS = True
@@ -256,11 +280,11 @@ CORS_ALLOW_HEADERS = [
     "tenant",  # Allow the tenant header explicitly
 ]
 
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.oval_backend.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.sendgrid.net')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='apikey')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default=config("EMAIL_HOST_PASSWORD"))
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 
 DEFAULT_FROM_EMAIL = 'DCL <admin@daffodil-bd.com>'
@@ -285,7 +309,28 @@ CSRF_TRUSTED_ORIGINS = [
     "https://front.prochar.xyz",
     "http://front.prochar.xyz",
     'http://192.168.5.11:3000'
-]
+] + config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+
+# Behind nginx: trust its X-Forwarded-Proto so request.is_secure() and the CSRF
+# origin check see https. Only enable when a proxy always sets this header.
+if config('BEHIND_PROXY', default=False, cast=bool):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Enable once HTTPS works; secure cookies are never sent over plain http.
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=False, cast=bool)
+
+# With DEBUG=False Django sends request errors nowhere by default; write them to
+# stderr so they end up in the gunicorn log.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': config('DJANGO_LOG_LEVEL', default='WARNING')},
+    },
+}
 
 SUMMERNOTE_CONFIG = {
     # Using SummernoteWidget - iframe mode, default

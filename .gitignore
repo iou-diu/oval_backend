@@ -82,6 +82,12 @@ celerybeat-schedule
 
 # dotenv
 .env
+.env.production
+
+# Created by deploy.sh inside the project folder
+/cache/
+/run/
+/logs/
 
 # virtualenv
 .venv/
